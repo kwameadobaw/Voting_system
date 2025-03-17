@@ -125,34 +125,77 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
+    // Find the downloadVotingData function and replace it with this:
     function downloadVotingData() {
         const votes = JSON.parse(localStorage.getItem('votes')) || [];
-        const students = JSON.parse(localStorage.getItem('students')) || [];
         const positions = JSON.parse(localStorage.getItem('positions')) || [];
         
-        const data = {
-            votes: votes,
-            students: students,
-            positions: positions,
-            exportDate: new Date().toISOString(),
-            statistics: {
-                totalStudents: students.length,
-                studentsVoted: students.filter(student => student.hasVoted).length,
-                totalVotes: votes.length
+        // Create a new jsPDF instance
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        // Set title
+        doc.setFontSize(18);
+        doc.text('Voting Results Report', 105, 15, { align: 'center' });
+        doc.setFontSize(12);
+        doc.text(`Generated on: ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`, 105, 22, { align: 'center' });
+        
+        let yPosition = 35;
+        
+        // For each position, count votes per candidate
+        positions.forEach(position => {
+            // Add position title
+            doc.setFontSize(14);
+            doc.text(`${position.title}`, 14, yPosition);
+            yPosition += 8;
+            
+            // Filter votes for this position
+            const positionVotes = votes.filter(vote => vote.positionId === position.id);
+            
+            // Count votes for each candidate
+            const candidateVotes = {};
+            position.candidates.forEach(candidate => {
+                candidateVotes[candidate.id] = 0;
+            });
+            
+            positionVotes.forEach(vote => {
+                if (candidateVotes[vote.candidateId] !== undefined) {
+                    candidateVotes[vote.candidateId]++;
+                }
+            });
+            
+            // Add candidate vote counts
+            doc.setFontSize(12);
+            position.candidates.forEach(candidate => {
+                const voteCount = candidateVotes[candidate.id];
+                doc.text(`${candidate.name}: ${voteCount} votes`, 20, yPosition);
+                yPosition += 7;
+            });
+            
+            // Add total votes for this position
+            doc.text(`Total votes for ${position.title}: ${positionVotes.length}`, 14, yPosition);
+            yPosition += 15;
+            
+            // Add a new page if we're running out of space
+            if (yPosition > 250) {
+                doc.addPage();
+                yPosition = 20;
             }
-        };
+        });
         
-        const dataStr = JSON.stringify(data, null, 2);
-        const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+        // Add summary at the end
+        doc.setFontSize(14);
+        doc.text('Summary', 14, yPosition);
+        yPosition += 8;
         
-        const exportFileName = `voting_data_${new Date().toISOString().slice(0, 10)}.json`;
+        doc.setFontSize(12);
+        doc.text(`Total number of votes cast: ${votes.length}`, 14, yPosition);
         
-        const linkElement = document.createElement('a');
-        linkElement.setAttribute('href', dataUri);
-        linkElement.setAttribute('download', exportFileName);
-        linkElement.click();
+        // Save the PDF
+        const fileName = `voting_results_${new Date().toISOString().slice(0, 10)}.pdf`;
+        doc.save(fileName);
         
-        showMessage('Voting data has been downloaded.', 'success');
+        showMessage('Voting results have been downloaded as PDF.', 'success');
     }
     
     function showMessage(message, type) {
