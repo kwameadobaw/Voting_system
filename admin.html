@@ -5,67 +5,123 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Voting System - Admin</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
-    <div class="container">
-        <div class="admin-section">
-            <h1>Admin Panel</h1>
-            
-            <div class="admin-stats">
-                <h3>Voting Statistics</h3>
-                <table>
-                    <tr>
-                        <th>Total Students</th>
-                        <td id="totalStudents">0</td>
-                    </tr>
-                    <tr>
-                        <th>Students Voted</th>
-                        <td id="studentsVoted">0</td>
-                    </tr>
-                    <tr>
-                        <th>Participation Rate</th>
-                        <td id="participationRate">0%</td>
-                    </tr>
-                    <tr>
-                        <th>Total Votes Cast</th>
-                        <td id="totalVotes">0</td>
-                    </tr>
-                </table>
+    <div class="container admin-container">
+        <div class="admin-header">
+            <div class="admin-title">
+                <i class="fas fa-user-shield admin-icon"></i>
+                <h1>Admin Dashboard</h1>
             </div>
-            
-            <div class="admin-stats">
-                <h3>Position Statistics</h3>
-                <table id="positionStats">
-                    <tr>
-                        <th>Position</th>
-                        <th>Votes Cast</th>
-                        <th>Leading Candidate</th>
-                    </tr>
-                    <!-- Position stats will be populated here -->
-                </table>
-            </div>
-            
-            <div class="admin-controls">
-                <h2>System Controls</h2>
-                <p>Use these controls with caution. These actions cannot be undone.</p>
-                
-                <div class="admin-actions">
-                    <button id="resetVotesBtn" class="btn btn-danger">Reset All Votes</button>
-                    <button id="resetStudentsBtn" class="btn btn-danger">Reset Student Voting Status</button>
-                    <button id="downloadDataBtn" class="btn">Download Voting Data</button>
+            <p class="admin-subtitle">Manage voting system and view statistics</p>
+        </div>
+        
+        <div class="admin-tabs">
+            <button class="tab-btn active" data-tab="statistics"><i class="fas fa-chart-bar"></i> Statistics</button>
+            <button class="tab-btn" data-tab="positions"><i class="fas fa-list-alt"></i> Positions</button>
+            <button class="tab-btn" data-tab="students"><i class="fas fa-user-graduate"></i> Students</button>
+            <button class="tab-btn" data-tab="controls"><i class="fas fa-cogs"></i> Controls</button>
+        </div>
+        
+        <div class="tab-content active" id="statistics-tab">
+            <div class="admin-card">
+                <div class="voting-stats">
+                    <div class="stat-box">
+                        <i class="fas fa-users stat-icon"></i>
+                        <div class="stat-info">
+                            <h3>Total Students</h3>
+                            <p id="totalStudents">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-box">
+                        <i class="fas fa-vote-yea stat-icon"></i>
+                        <div class="stat-info">
+                            <h3>Students Voted</h3>
+                            <p id="studentsVoted">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-box">
+                        <i class="fas fa-percentage stat-icon"></i>
+                        <div class="stat-info">
+                            <h3>Participation Rate</h3>
+                            <p id="participationRate">0%</p>
+                        </div>
+                    </div>
+                    <div class="stat-box">
+                        <i class="fas fa-poll stat-icon"></i>
+                        <div class="stat-info">
+                            <h3>Total Votes</h3>
+                            <p id="totalVotes">0</p>
+                        </div>
+                    </div>
                 </div>
-                
-                <div id="adminMessage" class="message"></div>
             </div>
             
-            <div class="back-link">
-                <a href="index.html" class="btn btn-secondary">Back to Login</a>
-                <a href="results.html" class="btn btn-info">View Results</a>
+            <div class="admin-card">
+                <h2><i class="fas fa-chart-line"></i> Position Statistics</h2>
+                <div class="admin-stats">
+                    <table id="positionStatsTable">
+                        <thead>
+                            <tr>
+                                <th>Position</th>
+                                <th>Votes Cast</th>
+                                <th>Leading Candidate</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Position stats will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
+        
+        <div class="tab-content" id="positions-tab">
+            <div class="admin-card">
+                <h2><i class="fas fa-list-alt"></i> Manage Positions</h2>
+                <div id="positionsContainer">
+                    <!-- Positions will be populated here -->
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="students-tab">
+            <div class="admin-card">
+                <h2><i class="fas fa-user-graduate"></i> Manage Students</h2>
+                <div id="studentsContainer">
+                    <!-- Students will be populated here -->
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="controls-tab">
+            <div class="admin-card">
+                <h2><i class="fas fa-cogs"></i> System Controls</h2>
+                <div class="admin-controls">
+                    <p>Use these controls with caution. These actions cannot be undone.</p>
+                    <div class="admin-actions">
+                        <button id="resetVotesBtn" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Reset All Votes</button>
+                        <button id="resetStudentStatusBtn" class="btn btn-warning"><i class="fas fa-redo"></i> Reset Student Voting Status</button>
+                        <button id="downloadDataBtn" class="btn btn-success"><i class="fas fa-download"></i> Download Voting Data</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="adminMessage" class="message" style="display: none;"></div>
+        
+        <div class="back-link">
+            <a href="index.html" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back to Login</a>
+            <a href="results.html" class="btn btn-info"><i class="fas fa-chart-pie"></i> View Results</a>
+        </div>
+        
+        <div class="last-updated">
+            Last updated: <span id="lastUpdated"></span>
+        </div>
     </div>
-    <script src="init.js"></script>
+    
     <script src="admin.js"></script>
 </body>
 </html>

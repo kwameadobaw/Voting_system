@@ -5,41 +5,53 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Voting System - Results</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <div class="container">
-        <div class="results-section">
-            <h1>Voting Results</h1>
-            
-            <div class="voting-stats">
-                <p>Total Students: <span id="totalStudents">0</span></p>
-                <p>Students Voted: <span id="studentsVoted">0</span></p>
-                <p>Participation Rate: <span id="participationRate">0%</span></p>
+    <div class="container results-container">
+        <div class="results-header">
+            <div class="results-title">
+                <i class="fas fa-chart-bar results-icon"></i>
+                <h1>Election Results</h1>
             </div>
-            
-            <div class="position-selection">
-                <h2>Select a Position to View Results</h2>
-                <select id="positionResultSelect">
-                    <option value="">-- Select Position --</option>
-                </select>
+            <p class="results-subtitle">View the current voting results and statistics</p>
+        </div>
+        
+        <div class="results-summary">
+            <div class="summary-box">
+                <i class="fas fa-vote-yea summary-icon"></i>
+                <div class="summary-info">
+                    <h3>Total Votes Cast</h3>
+                    <p id="totalVotes">0</p>
+                </div>
             </div>
-            
-            <div class="chart-container">
-                <canvas id="resultsChart"></canvas>
-            </div>
-            
-            <div class="last-updated">
-                <p>Last updated: <span id="lastUpdated"></span></p>
-                <p>Results automatically update every minute</p>
-            </div>
-            
-            <div class="back-link">
-                <a href="index.html" class="btn btn-secondary">Back to Login</a>
+            <div class="summary-box">
+                <i class="fas fa-users summary-icon"></i>
+                <div class="summary-info">
+                    <h3>Participation Rate</h3>
+                    <p id="participationRate">0%</p>
+                </div>
             </div>
         </div>
+        
+        <div class="position-tabs" id="positionTabs">
+            <!-- Position tabs will be populated here -->
+        </div>
+        
+        <div class="results-charts" id="resultsContainer">
+            <!-- Results will be populated here -->
+        </div>
+        
+        <div class="back-link">
+            <a href="index.html" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back to Login</a>
+        </div>
+        
+        <div class="last-updated">
+            Last updated: <span id="lastUpdated">-</span>
+        </div>
     </div>
-    <script src="init.js"></script>
+    
     <script src="results.js"></script>
 </body>
 </html>

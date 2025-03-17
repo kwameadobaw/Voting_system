@@ -5,24 +5,55 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Thank You for Voting</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-    <div class="container">
+    <div class="container thank-you-container">
         <div class="thank-you-section">
-            <h1>Thank You for Voting!</h1>
-            <div class="student-info">
-                <p>Student ID: <span id="displayStudentId"></span></p>
-                <p>Name: <span id="displayStudentName"></span></p>
+            <div class="thank-you-header">
+                <i class="fas fa-check-circle success-icon"></i>
+                <h1>Thank You for Voting!</h1>
             </div>
+            
+            <div class="confetti-container" id="confetti-container"></div>
+            
+            <div class="student-info thank-you-info vertical-info">
+                <div class="info-item">
+                    <i class="fas fa-id-card"></i>
+                    <div class="info-content">
+                        <span class="info-label">Student ID:</span>
+                        <span id="displayStudentId" class="info-value"></span>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-user"></i>
+                    <div class="info-content">
+                        <span class="info-label">Name:</span>
+                        <span id="displayStudentName" class="info-value"></span>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-calendar-check"></i>
+                    <div class="info-content">
+                        <span class="info-label">Vote Recorded:</span>
+                        <span id="voteTimestamp" class="info-value"></span>
+                    </div>
+                </div>
+            </div>
+            
             <div class="thank-you-message">
                 <p>Your vote has been successfully recorded.</p>
                 <p>Thank you for participating in the student election!</p>
+                <p>Your voice matters in shaping our student community.</p>
             </div>
+            
             <div class="sign-out-section">
-                <button id="signOutBtn" class="btn">Sign Out</button>
+                <button id="signOutBtn" class="btn btn-primary">Sign Out <i class="fas fa-sign-out-alt"></i></button>
             </div>
         </div>
     </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Get student info from session storage
@@ -35,6 +66,7 @@
             // Display student information
             document.getElementById('displayStudentId').textContent = currentStudent.id;
             document.getElementById('displayStudentName').textContent = currentStudent.name;
+            document.getElementById('voteTimestamp').textContent = new Date().toLocaleString();
 
             // Sign out button
             document.getElementById('signOutBtn').addEventListener('click', function() {
@@ -43,6 +75,40 @@
                 // Redirect to login page
                 window.location.href = 'index.html';
             });
+            
+            // Trigger confetti animation
+            const duration = 3 * 1000;
+            const animationEnd = Date.now() + duration;
+            
+            function randomInRange(min, max) {
+                return Math.random() * (max - min) + min;
+            }
+            
+            // Initial burst
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
+            
+            // Continuous confetti
+            const interval = setInterval(function() {
+                const timeLeft = animationEnd - Date.now();
+                
+                if (timeLeft <= 0) {
+                    return clearInterval(interval);
+                }
+                
+                confetti({
+                    particleCount: 2,
+                    angle: randomInRange(55, 125),
+                    spread: randomInRange(50, 70),
+                    origin: { 
+                        x: randomInRange(0.1, 0.9), 
+                        y: Math.random() - 0.2 
+                    }
+                });
+            }, 250);
         });
     </script>
 </body>

@@ -1,70 +1,175 @@
-// Add this at the beginning of the admin.js file
 document.addEventListener('DOMContentLoaded', function() {
     // Check if admin is authenticated
     if (!sessionStorage.getItem('adminAuthenticated')) {
-        // Show login prompt
-        const password = prompt('Please enter admin password:');
-        
-        // Simple password check (in a real app, this would be server-side)
-        if (password === 'admin123') {
-            sessionStorage.setItem('adminAuthenticated', 'true');
-        } else {
-            alert('Invalid password. Access denied.');
-            window.location.href = 'index.html';
-            return;
-        }
+        window.location.href = 'index.html';
+        return;
     }
-    
-    const resetVotesBtn = document.getElementById('resetVotesBtn');
-    const resetStudentsBtn = document.getElementById('resetStudentsBtn');
-    const downloadDataBtn = document.getElementById('downloadDataBtn');
-    const adminMessage = document.getElementById('adminMessage');
-    
+
+    // Get DOM elements
     const totalStudentsElement = document.getElementById('totalStudents');
     const studentsVotedElement = document.getElementById('studentsVoted');
     const participationRateElement = document.getElementById('participationRate');
     const totalVotesElement = document.getElementById('totalVotes');
-    const positionStatsTable = document.getElementById('positionStats');
+    const positionStatsTable = document.getElementById('positionStatsTable').querySelector('tbody');
+    const positionsContainer = document.getElementById('positionsContainer');
+    const studentsContainer = document.getElementById('studentsContainer');
+    const adminMessage = document.getElementById('adminMessage');
+    const lastUpdatedElement = document.getElementById('lastUpdated');
     
-    // Load statistics when page loads
-    updateStatistics();
+    // Tab functionality
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
     
-    // Set up auto-refresh of statistics
-    setInterval(updateStatistics, 60000); // Update every minute
-    
-    // Event listeners
+    tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const tabName = button.getAttribute('data-tab');
+            
+            // Remove active class from all buttons and contents
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            tabContents.forEach(content => content.classList.remove('active'));
+            
+            // Add active class to clicked button and corresponding content
+            button.classList.add('active');
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+        });
+    });
+
+    // Action buttons
+    const resetVotesBtn = document.getElementById('resetVotesBtn');
+    const resetStudentStatusBtn = document.getElementById('resetStudentStatusBtn');
+    const downloadDataBtn = document.getElementById('downloadDataBtn');
+
     resetVotesBtn.addEventListener('click', resetVotes);
-    resetStudentsBtn.addEventListener('click', resetStudentStatus);
-    downloadDataBtn.addEventListener('click', downloadVotingData);
-    
-    function updateStatistics() {
-        // Get data from localStorage
+    resetStudentStatusBtn.addEventListener('click', resetStudentStatus);
+    downloadDataBtn.addEventListener('click', downloadData);
+
+    // Load data
+    loadData();
+    updateLastUpdated();
+
+    // Set interval to refresh data every 30 seconds
+    setInterval(loadData, 30000);
+    setInterval(updateLastUpdated, 30000);
+
+    function loadData() {
+        loadStudents();
+        loadPositions();
+        loadVotes();
+        updateStats();
+    }
+
+    function loadStudents() {
         const students = JSON.parse(localStorage.getItem('students')) || [];
-        const votes = JSON.parse(localStorage.getItem('votes')) || [];
-        const positions = JSON.parse(localStorage.getItem('positions')) || [];
         
-        // Update general statistics
+        // Update student stats
         const totalStudents = students.length;
         const studentsVoted = students.filter(student => student.hasVoted).length;
-        const participationRate = totalStudents > 0 ? ((studentsVoted / totalStudents) * 100).toFixed(1) : 0;
-        const totalVotes = votes.length;
+        const participationRate = totalStudents > 0 ? ((studentsVoted / totalStudents) * 100).toFixed(1) : '0.0';
         
         totalStudentsElement.textContent = totalStudents;
         studentsVotedElement.textContent = studentsVoted;
         participationRateElement.textContent = `${participationRate}%`;
-        totalVotesElement.textContent = totalVotes;
         
-        // Update position statistics
-        // Clear existing rows except header
-        while (positionStatsTable.rows.length > 1) {
-            positionStatsTable.deleteRow(1);
+        // Display students in the students tab
+        studentsContainer.innerHTML = '';
+        
+        if (students.length === 0) {
+            studentsContainer.innerHTML = '<p>No students found.</p>';
+            return;
+        }
+        
+        const table = document.createElement('table');
+        table.innerHTML = `
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        `;
+        
+        const tbody = table.querySelector('tbody');
+        
+        students.forEach(student => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${student.id}</td>
+                <td>${student.name}</td>
+                <td>${student.hasVoted ? '<span style="color: #2ecc71;">Voted</span>' : '<span style="color: #e74c3c;">Not Voted</span>'}</td>
+            `;
+            tbody.appendChild(row);
+        });
+        
+        studentsContainer.appendChild(table);
+    }
+
+    function loadPositions() {
+        const positions = JSON.parse(localStorage.getItem('positions')) || [];
+        
+        // Display positions in the positions tab
+        positionsContainer.innerHTML = '';
+        
+        if (positions.length === 0) {
+            positionsContainer.innerHTML = '<p>No positions found.</p>';
+            return;
         }
         
         positions.forEach(position => {
-            // Filter votes for this position
+            const positionCard = document.createElement('div');
+            positionCard.className = 'position-card';
+            
+            let candidatesHTML = '';
+            position.candidates.forEach(candidate => {
+                candidatesHTML += `
+                    <li>${candidate.name} - ${candidate.description}</li>
+                `;
+            });
+            
+            positionCard.innerHTML = `
+                <h3>${position.title}</h3>
+                <p><strong>Candidates:</strong></p>
+                <ul>${candidatesHTML}</ul>
+            `;
+            
+            positionsContainer.appendChild(positionCard);
+        });
+    }
+
+    function loadVotes() {
+        const votes = JSON.parse(localStorage.getItem('votes')) || [];
+        const positions = JSON.parse(localStorage.getItem('positions')) || [];
+        
+        // Update total votes count
+        totalVotesElement.textContent = votes.length;
+        
+        // Clear position stats table
+        positionStatsTable.innerHTML = '';
+        
+        if (positions.length === 0 || votes.length === 0) {
+            const row = document.createElement('tr');
+            row.innerHTML = '<td colspan="3">No voting data available.</td>';
+            positionStatsTable.appendChild(row);
+            return;
+        }
+        
+        // Calculate votes per position and leading candidates
+        positions.forEach(position => {
             const positionVotes = votes.filter(vote => vote.positionId === position.id);
             
-            // Count votes for each candidate
+            if (positionVotes.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${position.title}</td>
+                    <td>0</td>
+                    <td>No votes yet</td>
+                `;
+                positionStatsTable.appendChild(row);
+                return;
+            }
+            
+            // Count votes per candidate
             const candidateVotes = {};
             position.candidates.forEach(candidate => {
                 candidateVotes[candidate.id] = 0;
@@ -77,133 +182,104 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             
             // Find leading candidate
-            let leadingCandidate = { name: 'None', votes: 0 };
-            position.candidates.forEach(candidate => {
-                if (candidateVotes[candidate.id] > leadingCandidate.votes) {
-                    leadingCandidate = {
-                        name: candidate.name,
-                        votes: candidateVotes[candidate.id]
-                    };
+            let leadingCandidateId = null;
+            let maxVotes = 0;
+            
+            for (const [candidateId, voteCount] of Object.entries(candidateVotes)) {
+                if (voteCount > maxVotes) {
+                    maxVotes = voteCount;
+                    leadingCandidateId = candidateId;
                 }
-            });
+            }
             
-            // Create table row
-            const row = positionStatsTable.insertRow();
+            // Get leading candidate name
+            let leadingCandidateName = 'Unknown';
+            if (leadingCandidateId) {
+                const candidate = position.candidates.find(c => c.id === leadingCandidateId);
+                if (candidate) {
+                    leadingCandidateName = candidate.name;
+                }
+            }
             
-            const positionCell = row.insertCell(0);
-            positionCell.textContent = position.title;
-            
-            const votesCell = row.insertCell(1);
-            votesCell.textContent = positionVotes.length;
-            
-            const leadingCell = row.insertCell(2);
-            leadingCell.textContent = leadingCandidate.votes > 0 ? 
-                `${leadingCandidate.name} (${leadingCandidate.votes} votes)` : 
-                'No votes yet';
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${position.title}</td>
+                <td>${positionVotes.length}</td>
+                <td>${leadingCandidateName} (${maxVotes} votes)</td>
+            `;
+            positionStatsTable.appendChild(row);
         });
     }
-    
+
+    function updateStats() {
+        // This function can be expanded to include more statistics
+        // Currently, the basic stats are handled in loadStudents and loadVotes
+    }
+
     function resetVotes() {
         if (confirm('Are you sure you want to reset all votes? This action cannot be undone.')) {
             localStorage.setItem('votes', JSON.stringify([]));
-            updateStatistics();
-            showMessage('All votes have been reset successfully.', 'success');
-        }
-    }
-    
-    function resetStudentStatus() {
-        if (confirm('Are you sure you want to reset all student voting status? This will allow students to vote again.')) {
-            const students = JSON.parse(localStorage.getItem('students')) || [];
             
+            // Reset student voting status
+            const students = JSON.parse(localStorage.getItem('students')) || [];
             students.forEach(student => {
                 student.hasVoted = false;
             });
-            
             localStorage.setItem('students', JSON.stringify(students));
-            updateStatistics();
-            showMessage('Student voting status has been reset successfully.', 'success');
+            
+            showMessage('All votes have been reset successfully.', 'success');
+            loadData();
         }
     }
-    
-    // Find the downloadVotingData function and replace it with this:
-    function downloadVotingData() {
+
+    function resetStudentStatus() {
+        if (confirm('Are you sure you want to reset student voting status? This will allow students to vote again.')) {
+            const students = JSON.parse(localStorage.getItem('students')) || [];
+            students.forEach(student => {
+                student.hasVoted = false;
+            });
+            localStorage.setItem('students', JSON.stringify(students));
+            
+            showMessage('Student voting status has been reset successfully.', 'success');
+            loadData();
+        }
+    }
+
+    function downloadData() {
         const votes = JSON.parse(localStorage.getItem('votes')) || [];
         const positions = JSON.parse(localStorage.getItem('positions')) || [];
+        const students = JSON.parse(localStorage.getItem('students')) || [];
         
-        // Create a new jsPDF instance
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
+        const data = {
+            votes: votes,
+            positions: positions,
+            students: students,
+            exportDate: new Date().toISOString()
+        };
         
-        // Set title
-        doc.setFontSize(18);
-        doc.text('Voting Results Report', 105, 15, { align: 'center' });
-        doc.setFontSize(12);
-        doc.text(`Generated on: ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`, 105, 22, { align: 'center' });
+        const dataStr = JSON.stringify(data, null, 2);
+        const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
         
-        let yPosition = 35;
+        const exportFileName = `voting_data_${new Date().toISOString().slice(0, 10)}.json`;
         
-        // For each position, count votes per candidate
-        positions.forEach(position => {
-            // Add position title
-            doc.setFontSize(14);
-            doc.text(`${position.title}`, 14, yPosition);
-            yPosition += 8;
-            
-            // Filter votes for this position
-            const positionVotes = votes.filter(vote => vote.positionId === position.id);
-            
-            // Count votes for each candidate
-            const candidateVotes = {};
-            position.candidates.forEach(candidate => {
-                candidateVotes[candidate.id] = 0;
-            });
-            
-            positionVotes.forEach(vote => {
-                if (candidateVotes[vote.candidateId] !== undefined) {
-                    candidateVotes[vote.candidateId]++;
-                }
-            });
-            
-            // Add candidate vote counts
-            doc.setFontSize(12);
-            position.candidates.forEach(candidate => {
-                const voteCount = candidateVotes[candidate.id];
-                doc.text(`${candidate.name}: ${voteCount} votes`, 20, yPosition);
-                yPosition += 7;
-            });
-            
-            // Add total votes for this position
-            doc.text(`Total votes for ${position.title}: ${positionVotes.length}`, 14, yPosition);
-            yPosition += 15;
-            
-            // Add a new page if we're running out of space
-            if (yPosition > 250) {
-                doc.addPage();
-                yPosition = 20;
-            }
-        });
+        const linkElement = document.createElement('a');
+        linkElement.setAttribute('href', dataUri);
+        linkElement.setAttribute('download', exportFileName);
+        linkElement.click();
         
-        // Add summary at the end
-        doc.setFontSize(14);
-        doc.text('Summary', 14, yPosition);
-        yPosition += 8;
-        
-        doc.setFontSize(12);
-        doc.text(`Total number of votes cast: ${votes.length}`, 14, yPosition);
-        
-        // Save the PDF
-        const fileName = `voting_results_${new Date().toISOString().slice(0, 10)}.pdf`;
-        doc.save(fileName);
-        
-        showMessage('Voting results have been downloaded as PDF.', 'success');
+        showMessage('Data has been downloaded successfully.', 'success');
     }
-    
+
+    function updateLastUpdated() {
+        const now = new Date();
+        lastUpdatedElement.textContent = now.toLocaleString();
+    }
+
     function showMessage(message, type) {
         adminMessage.textContent = message;
         adminMessage.className = `message ${type}`;
         adminMessage.style.display = 'block';
         
-        // Hide message after 5 seconds
         setTimeout(() => {
             adminMessage.style.display = 'none';
         }, 5000);

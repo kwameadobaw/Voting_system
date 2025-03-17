@@ -7,25 +7,50 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="icon" type="favicon" href="images/pngegg (8).png">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-    <div class="container">
+    <div class="particles-container" id="particles-js"></div>
+    <div class="container login-container">
         <div class="login-form">
+            <div class="logo-container">
+                <i class="fas fa-vote-yea logo-icon"></i>
+            </div>
             <h1>Student Voting System</h1>
-            <div class="form-group">
-                <label for="studentId">Student ID:</label>
+            <p class="login-subtitle">Cast your vote and make your voice heard!</p>
+            
+            <div class="form-group animated-input">
+                <label for="studentId"><i class="fas fa-id-card"></i> Student ID:</label>
                 <input type="text" id="studentId" placeholder="Enter your student ID">
             </div>
             <div id="error-message" class="error-message"></div>
-            <button id="loginBtn" class="btn">Login</button>
-            <div class="results-link">
-                <a href="#" id="viewResultsBtn">View Current Results</a>
+            <button id="loginBtn" class="btn btn-login">
+                <span>Login</span>
+                <i class="fas fa-arrow-right"></i>
+            </button>
+            
+            <div class="action-links">
+                <div class="results-link">
+                    <a href="#" id="viewResultsBtn">
+                        <i class="fas fa-chart-bar"></i> View Current Results
+                    </a>
+                </div>
+                <div class="admin-link">
+                    <a href="#" id="adminBtn" class="admin-button">
+                        <i class="fas fa-user-shield"></i> Admin Panel
+                    </a>
+                </div>
             </div>
-            <div class="admin-link">
-                <a href="#" id="adminBtn" class="admin-button">Admin Panel</a>
+            
+            <div class="login-footer">
+                <p>Developed by <a href="https://kwameadobaw.vercel.app/" target="_blank">Kwame Adobaw Junior</a></p>
+
+                <p class="copyright">© 2025 Student Council</p>
             </div>
         </div>
     </div>
+    
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
     <script src="init.js"></script>
     <script src="login.js"></script>
     <script>
@@ -50,6 +75,79 @@
             } else {
                 alert('Invalid password. Access denied.');
             }
+        });
+        
+        // Initialize particles.js
+        particlesJS('particles-js', {
+            "particles": {
+                "number": {
+                    "value": 80,
+                    "density": {
+                        "enable": true,
+                        "value_area": 800
+                    }
+                },
+                "color": {
+                    "value": "#3498db"
+                },
+                "shape": {
+                    "type": "circle",
+                    "stroke": {
+                        "width": 0,
+                        "color": "#000000"
+                    },
+                },
+                "opacity": {
+                    "value": 0.5,
+                    "random": false,
+                },
+                "size": {
+                    "value": 3,
+                    "random": true,
+                },
+                "line_linked": {
+                    "enable": true,
+                    "distance": 150,
+                    "color": "#3498db",
+                    "opacity": 0.4,
+                    "width": 1
+                },
+                "move": {
+                    "enable": true,
+                    "speed": 2,
+                    "direction": "none",
+                    "random": false,
+                    "straight": false,
+                    "out_mode": "out",
+                    "bounce": false,
+                }
+            },
+            "interactivity": {
+                "detect_on": "canvas",
+                "events": {
+                    "onhover": {
+                        "enable": true,
+                        "mode": "grab"
+                    },
+                    "onclick": {
+                        "enable": true,
+                        "mode": "push"
+                    },
+                    "resize": true
+                },
+                "modes": {
+                    "grab": {
+                        "distance": 140,
+                        "line_linked": {
+                            "opacity": 1
+                        }
+                    },
+                    "push": {
+                        "particles_nb": 4
+                    }
+                }
+            },
+            "retina_detect": true
         });
     </script>
 </body>

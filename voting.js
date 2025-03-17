@@ -8,6 +8,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const messageDiv = document.getElementById('message');
     const displayStudentId = document.getElementById('displayStudentId');
     const displayStudentName = document.getElementById('displayStudentName');
+    const positionTitle = document.getElementById('currentPositionTitle');
+    const progressFill = document.getElementById('progressFill');
+    const currentPositionNumber = document.getElementById('currentPositionNumber');
+    const totalPositionsSpan = document.getElementById('totalPositions');
 
     // Get student info from session storage
     const currentStudent = JSON.parse(sessionStorage.getItem('currentStudent'));
@@ -20,25 +24,28 @@ document.addEventListener('DOMContentLoaded', function() {
     displayStudentId.textContent = currentStudent.id;
     displayStudentName.textContent = currentStudent.name;
 
-    // Track voted positions
+    // Track voted positions and current position index
     let votedPositions = [];
     let selectedCandidate = null;
     let positions = [];
+    let currentPositionIndex = 0;
 
     // Load positions from localStorage or fetch from JSON
     const storedPositions = JSON.parse(localStorage.getItem('positions'));
     if (storedPositions) {
         positions = storedPositions;
-        populatePositionDropdown();
+        loadCurrentPosition();
     } else {
         loadPositionsFromJSON();
     }
 
     // Event listeners
-    positionSelect.addEventListener('change', loadCandidates);
     voteBtn.addEventListener('click', submitVote);
-    nextPositionBtn.addEventListener('click', resetForNextPosition);
+    nextPositionBtn.addEventListener('click', moveToNextPosition);
     finishBtn.addEventListener('click', finishVoting);
+
+    // Initially disable finish button until all positions are voted for
+    finishBtn.disabled = true;
 
     function loadPositionsFromJSON() {
         fetch('positions.json')
@@ -51,7 +58,11 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(data => {
                 positions = data.positions;
                 localStorage.setItem('positions', JSON.stringify(positions));
-                populatePositionDropdown();
+                
+                // Update total positions count
+                totalPositionsSpan.textContent = positions.length;
+                
+                loadCurrentPosition();
             })
             .catch(error => {
                 console.error('Error:', error);
@@ -59,44 +70,57 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 
-    function populatePositionDropdown() {
-        // Clear existing options except the default one
-        while (positionSelect.options.length > 1) {
-            positionSelect.remove(1);
+    function loadCurrentPosition() {
+        // Hide position select dropdown since we're showing positions in order
+        document.querySelector('.position-selection').style.display = 'none';
+        
+        // Update total positions count
+        totalPositionsSpan.textContent = positions.length;
+        
+        if (currentPositionIndex >= positions.length) {
+            // All positions have been voted on
+            showMessage('You have voted for all positions. Click "Finish Voting" to submit.', 'success');
+            voteBtn.disabled = true;
+            nextPositionBtn.disabled = true;
+            
+            // Only enable finish button if all positions have been voted for
+            finishBtn.disabled = votedPositions.length < positions.length;
+            
+            return;
         }
         
-        // Populate position dropdown
-        positions.forEach(position => {
-            const option = document.createElement('option');
-            option.value = position.id;
-            option.textContent = position.title;
-            positionSelect.appendChild(option);
-        });
+        const position = positions[currentPositionIndex];
+        
+        // Check if already voted for this position
+        if (votedPositions.includes(position.id)) {
+            // Skip this position
+            currentPositionIndex++;
+            loadCurrentPosition();
+            return;
+        }
+        
+        // Update position title
+        positionTitle.textContent = position.title;
+        
+        // Update progress indicators
+        currentPositionNumber.textContent = currentPositionIndex + 1;
+        const progressPercentage = (currentPositionIndex / positions.length) * 100;
+        progressFill.style.width = `${progressPercentage}%`;
+        
+        // Load candidates for current position
+        loadCandidatesForPosition(position);
+        
+        // Update button states
+        voteBtn.disabled = true;
+        nextPositionBtn.disabled = true;
+        
+        // Disable finish button until all positions are voted for
+        finishBtn.disabled = true;
     }
 
-    function loadCandidates() {
-        const positionId = positionSelect.value;
-        
-        if (!positionId) {
-            candidatesList.innerHTML = '';
-            voteBtn.disabled = true;
-            return;
-        }
-
-        // Check if already voted for this position
-        if (votedPositions.includes(positionId)) {
-            showMessage('You have already voted for this position.', 'error');
-            candidatesList.innerHTML = '';
-            voteBtn.disabled = true;
-            return;
-        }
-
-        const position = positions.find(p => p.id === positionId);
-        if (!position) return;
-
+    function loadCandidatesForPosition(position) {
         candidatesList.innerHTML = '';
         selectedCandidate = null;
-        voteBtn.disabled = true;
 
         position.candidates.forEach(candidate => {
             const candidateCard = document.createElement('div');
@@ -130,13 +154,12 @@ document.addEventListener('DOMContentLoaded', function() {
     function submitVote() {
         if (!selectedCandidate) return;
         
-        const positionId = positionSelect.value;
-        const position = positions.find(p => p.id === positionId);
+        const position = positions[currentPositionIndex];
         
         // Create vote object
         const vote = {
             studentId: currentStudent.id,
-            positionId: positionId,
+            positionId: position.id,
             positionTitle: position.title,
             candidateId: selectedCandidate.id,
             candidateName: selectedCandidate.name,
@@ -147,13 +170,25 @@ document.addEventListener('DOMContentLoaded', function() {
         saveVote(vote);
         
         // Add position to voted positions
-        votedPositions.push(positionId);
+        votedPositions.push(position.id);
         
-        // Disable vote button and enable next position button
+        // Enable next position button
         voteBtn.disabled = true;
         nextPositionBtn.disabled = false;
         
         showMessage(`Vote for ${position.title} submitted successfully!`, 'success');
+        
+        // Check if this is the last position
+        if (currentPositionIndex === positions.length - 1) {
+            nextPositionBtn.disabled = true;
+            // Enable finish button only if all positions have been voted for
+            finishBtn.disabled = votedPositions.length < positions.length;
+            showMessage('You have voted for all positions. Click "Finish Voting" to submit.', 'success');
+        }
+        
+        // Update progress indicators
+        const progressPercentage = ((votedPositions.length) / positions.length) * 100;
+        progressFill.style.width = `${progressPercentage}%`;
     }
 
     function saveVote(vote) {
@@ -161,11 +196,6 @@ document.addEventListener('DOMContentLoaded', function() {
         let votes = JSON.parse(localStorage.getItem('votes')) || [];
         votes.push(vote);
         localStorage.setItem('votes', JSON.stringify(votes));
-        
-        // Update student's hasVoted status if all positions are voted
-        if (votedPositions.length === positions.length) {
-            updateStudentVoteStatus();
-        }
     }
     
     function updateStudentVoteStatus() {
@@ -181,38 +211,30 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    function resetForNextPosition() {
+    function moveToNextPosition() {
+        // Move to next position
+        currentPositionIndex++;
+        loadCurrentPosition();
+        
         // Reset selection
         selectedCandidate = null;
-        
-        // Clear candidates list
-        candidatesList.innerHTML = '';
-        
-        // Reset position select
-        positionSelect.value = '';
         
         // Disable buttons
         voteBtn.disabled = true;
         nextPositionBtn.disabled = true;
-        
-        // Clear message
-        messageDiv.innerHTML = '';
-        messageDiv.className = 'message';
     }
 
-    // In the voting.js file, find the finishVoting function and update it:
-    
     function finishVoting() {
-        // Check if at least one position was voted for
-        if (votedPositions.length === 0) {
-            showMessage('Please vote for at least one position before finishing.', 'error');
+        // Check if all positions were voted for
+        if (votedPositions.length < positions.length) {
+            showMessage('Please vote for all positions before finishing.', 'error');
             return;
         }
         
         // Update student's hasVoted status
         updateStudentVoteStatus();
         
-        // Redirect to thank you page instead of results page
+        // Redirect to thank you page
         window.location.href = 'thank-you.html';
     }
 

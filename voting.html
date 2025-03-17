@@ -5,35 +5,59 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Voting System - Vote</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-    <div class="container">
-        <div class="voting-section">
-            <h1>Cast Your Vote</h1>
-            
-            <div class="student-info">
-                <p>Student ID: <span id="displayStudentId"></span></p>
-                <p>Name: <span id="displayStudentName"></span></p>
-                <button id="logoutBtn" class="btn btn-logout">Logout</button>
+    <div class="container voting-container">
+        <div class="voting-header">
+            <div class="voting-title">
+                <i class="fas fa-vote-yea voting-icon"></i>
+                <h1>Cast Your Vote</h1>
             </div>
-            <div class="position-selection">
-                <h2>Select a Position</h2>
-                <select id="positionSelect">
-                    <option value="">-- Select Position --</option>
-                </select>
-            </div>
-            <div class="candidates-section" id="candidatesSection">
-                <h2>Candidates</h2>
-                <div id="candidatesList"></div>
-            </div>
-            <div class="voting-controls">
-                <button id="voteBtn" class="btn" disabled>Submit Vote</button>
-                <button id="nextPositionBtn" class="btn" disabled>Vote for Another Position</button>
-                <button id="finishBtn" class="btn">Finish Voting</button>
-            </div>
-            <div id="message" class="message"></div>
+            <p class="voting-subtitle">Make your voice heard in the student election</p>
         </div>
+        
+        <div class="student-info">
+            <div class="student-avatar">
+                <i class="fas fa-user-circle"></i>
+            </div>
+            <div class="student-details">
+                <p><i class="fas fa-id-card"></i> Student ID: <span id="displayStudentId"></span></p>
+                <p><i class="fas fa-user"></i> Name: <span id="displayStudentName"></span></p>
+            </div>
+            <button id="logoutBtn" class="btn btn-logout"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
+        
+        <div class="position-selection">
+            <select id="positionSelect">
+                <option value="">-- Select Position --</option>
+            </select>
+        </div>
+        
+        <div class="current-position">
+            <h2><i class="fas fa-bullhorn"></i> Current Position: <span id="currentPositionTitle"></span></h2>
+            <div class="position-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <p class="progress-text">Position <span id="currentPositionNumber">1</span> of <span id="totalPositions">0</span></p>
+            </div>
+        </div>
+        
+        <div class="candidates-section" id="candidatesSection">
+            <h2><i class="fas fa-users"></i> Candidates</h2>
+            <div id="candidatesList" class="candidates-grid"></div>
+        </div>
+        
+        <div class="voting-controls">
+            <button id="voteBtn" class="btn btn-success" disabled><i class="fas fa-check-circle"></i> Submit Vote for This Position</button>
+            <button id="nextPositionBtn" class="btn btn-primary" disabled><i class="fas fa-arrow-right"></i> Next Position</button>
+            <button id="finishBtn" class="btn btn-warning"><i class="fas fa-flag-checkered"></i> Finish Voting</button>
+        </div>
+        
+        <div id="message" class="message"></div>
     </div>
+    
     <script src="voting.js"></script>
     <script>
         // Add logout functionality
