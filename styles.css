@@ -316,36 +316,208 @@ input, select {
     text-align: center;
 }
 
-/* Add these styles to your existing styles.css file */
+/* Add these transition and animation effects to the existing styles.css file */
 
-.thank-you-section {
-    text-align: center;
-    padding: 20px;
+/* Page transition effect */
+body {
+    animation: fadeIn 0.5s ease-in-out;
 }
 
-.thank-you-message {
-    margin: 30px 0;
-    padding: 20px;
-    background-color: #f8f9fa;
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Container hover effect */
+.container {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* Button effects */
+.btn {
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn:after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 5px;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.5);
+    opacity: 0;
+    border-radius: 100%;
+    transform: scale(1, 1) translate(-50%);
+    transform-origin: 50% 50%;
+}
+
+.btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.btn:focus:not(:active)::after {
+    animation: ripple 1s ease-out;
+}
+
+@keyframes ripple {
+    0% {
+        transform: scale(0, 0);
+        opacity: 0.5;
+    }
+    100% {
+        transform: scale(20, 20);
+        opacity: 0;
+    }
+}
+
+/* Form input effects */
+input, select {
+    transition: all 0.3s ease;
+    border-left: 3px solid transparent;
+}
+
+input:focus, select:focus {
+    border-left: 3px solid #3498db;
+    box-shadow: 0 0 8px rgba(52, 152, 219, 0.5);
+    transform: translateX(5px);
+}
+
+/* Candidate card effects */
+.candidate-card {
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.candidate-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.candidate-card.selected {
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.4);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(46, 204, 113, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(46, 204, 113, 0);
+    }
+}
+
+/* Message animation */
+.message {
+    transition: all 0.5s ease;
+    transform-origin: top center;
+}
+
+.message.success, .message.error {
+    animation: slideDown 0.5s ease forwards;
+}
+
+@keyframes slideDown {
+    0% {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Results link button effect */
+.results-link a {
+    transition: all 0.3s ease;
+    position: relative;
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #2ecc71;
+    color: white;
+    text-decoration: none;
     border-radius: 4px;
-    font-size: 18px;
-    line-height: 1.6;
+    font-weight: bold;
+    overflow: hidden;
+    z-index: 1;
 }
 
-.thank-you-message p {
-    margin-bottom: 15px;
+.results-link a:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: all 0.5s ease;
+    z-index: -1;
 }
 
-.sign-out-section {
-    margin-top: 30px;
+.results-link a:hover:before {
+    left: 100%;
 }
 
-.sign-out-section .btn {
-    background-color: #e74c3c;
-    font-size: 16px;
-    padding: 12px 30px;
+/* Admin button effect */
+.admin-button {
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
 }
 
-.sign-out-section .btn:hover {
-    background-color: #c0392b;
+.admin-button:after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 0;
+    bottom: 0;
+    left: 0;
+    background-color: rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+    z-index: -1;
+}
+
+.admin-button:hover:after {
+    height: 100%;
+}
+
+/* Heading animation */
+h1 {
+    position: relative;
+}
+
+h1:after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 3px;
+    bottom: -10px;
+    left: 50%;
+    background-color: #3498db;
+    transition: all 0.5s ease;
+    transform: translateX(-50%);
+}
+
+.container:hover h1:after {
+    width: 100px;
+}
+
+/* Table row hover effect */
+.admin-stats tr {
+    transition: all 0.3s ease;
+}
+
+.admin-stats tr:hover {
+    background-color: rgba(52, 152, 219, 0.1);
 }
