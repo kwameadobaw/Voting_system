@@ -232,4 +232,32 @@ document.addEventListener('DOMContentLoaded', function() {
         messageDiv.textContent = message;
         messageDiv.className = `message ${type}`;
     }
+
+    function submitVote(positionId, candidateId) {
+        const studentId = sessionStorage.getItem('studentId');
+        
+        if (!studentId) {
+            showMessage('You must be logged in to vote.', 'error');
+            return;
+        }
+        
+        const vote = {
+            studentId: studentId,
+            positionId: positionId,
+            candidateId: candidateId,
+            timestamp: new Date().toISOString()
+        };
+        
+        // Add the vote to the database
+        window.VotingDB.votes.add(vote).then(() => {
+            // Update the student's voting status
+            return window.VotingDB.students.updateVotingStatus(studentId, true);
+        }).then(() => {
+            showMessage('Your vote has been recorded successfully!', 'success');
+            loadNextPosition();
+        }).catch(error => {
+            console.error('Error submitting vote:', error);
+            showMessage('There was an error submitting your vote. Please try again.', 'error');
+        });
+    }
 });
