@@ -10,57 +10,59 @@
 <body>
     <div class="container voting-container">
         <div class="voting-header">
-            <div class="voting-title">
-                <i class="fas fa-vote-yea voting-icon"></i>
-                <h1>Cast Your Vote</h1>
+            <div class="student-info">
+                <div class="student-avatar">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
+                <div class="student-details">
+                    <h3>Welcome, <span id="displayStudentName"></span></h3>
+                    <p>Student ID: <span id="displayStudentId"></span></p>
+                </div>
             </div>
-            <p class="voting-subtitle">Make your voice heard in the student election</p>
+            <button class="btn btn-logout" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
         </div>
         
-        <div class="student-info">
-            <div class="student-avatar">
-                <i class="fas fa-user-circle"></i>
+        <div class="voting-section">
+            <div class="position-selection">
+                <label for="positionSelect">Select Position:</label>
+                <select id="positionSelect">
+                    <!-- Positions will be populated here -->
+                </select>
             </div>
-            <div class="student-details">
-                <p><i class="fas fa-id-card"></i> Student ID: <span id="displayStudentId"></span></p>
-                <p><i class="fas fa-user"></i> Name: <span id="displayStudentName"></span></p>
+            
+            <div class="current-position">
+                <h2 id="currentPositionTitle">Position Title</h2>
             </div>
-            <button id="logoutBtn" class="btn btn-logout"><i class="fas fa-sign-out-alt"></i> Logout</button>
-        </div>
-        
-        <div class="position-selection">
-            <select id="positionSelect">
-                <option value="">-- Select Position --</option>
-            </select>
-        </div>
-        
-        <div class="current-position">
-            <h2><i class="fas fa-bullhorn"></i> Current Position: <span id="currentPositionTitle"></span></h2>
+            
             <div class="position-progress">
                 <div class="progress-bar">
                     <div class="progress-fill" id="progressFill"></div>
                 </div>
                 <p class="progress-text">Position <span id="currentPositionNumber">1</span> of <span id="totalPositions">0</span></p>
             </div>
+            
+            <div id="message" class="message"></div>
+            
+            <div class="candidates-grid" id="candidatesList">
+                <!-- Candidates will be populated here -->
+            </div>
+            
+            <div class="voting-controls">
+                <button id="voteBtn" class="btn btn-success" disabled>
+                    <i class="fas fa-vote-yea"></i> Submit Vote for this Position
+                </button>
+                <button id="finishBtn" class="btn btn-warning" disabled>
+                    <i class="fas fa-check-circle"></i> Finish Voting
+                </button>
+            </div>
         </div>
-        
-        <div class="candidates-section" id="candidatesSection">
-            <h2><i class="fas fa-users"></i> Candidates</h2>
-            <div id="candidatesList" class="candidates-grid"></div>
-        </div>
-        
-        <div class="voting-controls">
-            <button id="voteBtn" class="btn btn-success" disabled><i class="fas fa-check-circle"></i> Submit Vote for This Position</button>
-            <button id="nextPositionBtn" class="btn btn-primary" disabled><i class="fas fa-arrow-right"></i> Next Position</button>
-            <button id="finishBtn" class="btn btn-warning"><i class="fas fa-flag-checkered"></i> Finish Voting</button>
-        </div>
-        
-        <div id="message" class="message"></div>
     </div>
     
     <script src="voting.js"></script>
     <script>
-        // Add logout functionality
+        // Logout functionality
         document.getElementById('logoutBtn').addEventListener('click', function() {
             if (confirm('Are you sure you want to logout? Any unsubmitted votes will be lost.')) {
                 sessionStorage.removeItem('currentStudent');

@@ -12,25 +12,32 @@
     <div class="container results-container">
         <div class="results-header">
             <div class="results-title">
-                <i class="fas fa-chart-bar results-icon"></i>
-                <h1>Election Results</h1>
+                <i class="fas fa-chart-pie results-icon"></i>
+                <h1>Voting Results</h1>
             </div>
-            <p class="results-subtitle">View the current voting results and statistics</p>
+            <p class="results-subtitle">View the current voting results</p>
         </div>
         
         <div class="results-summary">
             <div class="summary-box">
                 <i class="fas fa-vote-yea summary-icon"></i>
                 <div class="summary-info">
-                    <h3>Total Votes Cast</h3>
+                    <h3>Total Votes</h3>
                     <p id="totalVotes">0</p>
                 </div>
             </div>
             <div class="summary-box">
                 <i class="fas fa-users summary-icon"></i>
                 <div class="summary-info">
-                    <h3>Participation Rate</h3>
+                    <h3>Participation</h3>
                     <p id="participationRate">0%</p>
+                </div>
+            </div>
+            <div class="summary-box">
+                <i class="fas fa-user-tie summary-icon"></i>
+                <div class="summary-info">
+                    <h3>Positions</h3>
+                    <p id="totalPositions">0</p>
                 </div>
             </div>
         </div>
@@ -39,16 +46,17 @@
             <!-- Position tabs will be populated here -->
         </div>
         
-        <div class="results-charts" id="resultsContainer">
-            <!-- Results will be populated here -->
+        <div id="positionResults">
+            <!-- Position results will be populated here -->
         </div>
         
         <div class="back-link">
             <a href="index.html" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back to Login</a>
+            <a href="admin.html" class="btn btn-primary"><i class="fas fa-user-shield"></i> Admin Dashboard</a>
         </div>
         
         <div class="last-updated">
-            Last updated: <span id="lastUpdated">-</span>
+            Last updated: <span id="lastUpdated"></span>
         </div>
     </div>
     

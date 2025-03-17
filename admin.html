@@ -15,64 +15,62 @@
                 <i class="fas fa-user-shield admin-icon"></i>
                 <h1>Admin Dashboard</h1>
             </div>
-            <p class="admin-subtitle">Manage voting system and view statistics</p>
+            <p class="admin-subtitle">Manage positions, candidates, and students</p>
         </div>
         
         <div class="admin-tabs">
-            <button class="tab-btn active" data-tab="statistics"><i class="fas fa-chart-bar"></i> Statistics</button>
-            <button class="tab-btn" data-tab="positions"><i class="fas fa-list-alt"></i> Positions</button>
-            <button class="tab-btn" data-tab="students"><i class="fas fa-user-graduate"></i> Students</button>
-            <button class="tab-btn" data-tab="controls"><i class="fas fa-cogs"></i> Controls</button>
+            <button class="tab-btn active" data-tab="statistics-tab">
+                <i class="fas fa-chart-line"></i> Statistics
+            </button>
+            <button class="tab-btn" data-tab="positions-tab">
+                <i class="fas fa-user-tie"></i> Positions
+            </button>
+            <button class="tab-btn" data-tab="students-tab">
+                <i class="fas fa-user-graduate"></i> Students
+            </button>
+            <button class="tab-btn" data-tab="controls-tab">
+                <i class="fas fa-cogs"></i> Controls
+            </button>
         </div>
         
-        <div class="tab-content active" id="statistics-tab">
+        <div class="tab-content" id="statistics-tab">
             <div class="admin-card">
-                <div class="voting-stats">
-                    <div class="stat-box">
-                        <i class="fas fa-users stat-icon"></i>
-                        <div class="stat-info">
-                            <h3>Total Students</h3>
-                            <p id="totalStudents">0</p>
-                        </div>
-                    </div>
+                <h2><i class="fas fa-chart-line"></i> Voting Statistics</h2>
+                <div class="stats-grid">
                     <div class="stat-box">
                         <i class="fas fa-vote-yea stat-icon"></i>
-                        <div class="stat-info">
-                            <h3>Students Voted</h3>
-                            <p id="studentsVoted">0</p>
-                        </div>
-                    </div>
-                    <div class="stat-box">
-                        <i class="fas fa-percentage stat-icon"></i>
-                        <div class="stat-info">
-                            <h3>Participation Rate</h3>
-                            <p id="participationRate">0%</p>
-                        </div>
-                    </div>
-                    <div class="stat-box">
-                        <i class="fas fa-poll stat-icon"></i>
                         <div class="stat-info">
                             <h3>Total Votes</h3>
                             <p id="totalVotes">0</p>
                         </div>
                     </div>
+                    <div class="stat-box">
+                        <i class="fas fa-user-tie stat-icon"></i>
+                        <div class="stat-info">
+                            <h3>Positions</h3>
+                            <p id="totalPositions">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-box">
+                        <i class="fas fa-user-graduate stat-icon"></i>
+                        <div class="stat-info">
+                            <h3>Students</h3>
+                            <p id="totalStudents">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-box">
+                        <i class="fas fa-percentage stat-icon"></i>
+                        <div class="stat-info">
+                            <h3>Participation</h3>
+                            <p id="participationRate">0%</p>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            
-            <div class="admin-card">
-                <h2><i class="fas fa-chart-line"></i> Position Statistics</h2>
-                <div class="admin-stats">
-                    <table id="positionStatsTable">
-                        <thead>
-                            <tr>
-                                <th>Position</th>
-                                <th>Votes Cast</th>
-                                <th>Leading Candidate</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Position stats will be populated here -->
-                        </tbody>
+                
+                <div class="position-stats">
+                    <h3>Position Statistics</h3>
+                    <table class="stats-table" id="positionStatsTable">
+                        <!-- Position stats will be populated here -->
                     </table>
                 </div>
             </div>
@@ -104,7 +102,8 @@
                     <div class="admin-actions">
                         <button id="resetVotesBtn" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Reset All Votes</button>
                         <button id="resetStudentStatusBtn" class="btn btn-warning"><i class="fas fa-redo"></i> Reset Student Voting Status</button>
-                        <button id="downloadDataBtn" class="btn btn-success"><i class="fas fa-download"></i> Download Voting Data</button>
+                        <button id="downloadPdfBtn" class="btn btn-success"><i class="fas fa-file-pdf"></i> Download PDF Report</button>
+                        <button id="downloadCsvBtn" class="btn btn-info"><i class="fas fa-file-csv"></i> Download CSV Report</button>
                     </div>
                 </div>
             </div>

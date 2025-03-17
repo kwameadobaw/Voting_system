@@ -3,7 +3,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const positionSelect = document.getElementById('positionSelect');
     const candidatesList = document.getElementById('candidatesList');
     const voteBtn = document.getElementById('voteBtn');
-    const nextPositionBtn = document.getElementById('nextPositionBtn');
     const finishBtn = document.getElementById('finishBtn');
     const messageDiv = document.getElementById('message');
     const displayStudentId = document.getElementById('displayStudentId');
@@ -40,8 +39,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Event listeners
-    voteBtn.addEventListener('click', submitVote);
-    nextPositionBtn.addEventListener('click', moveToNextPosition);
+    voteBtn.addEventListener('click', submitVoteAndMoveNext);
     finishBtn.addEventListener('click', finishVoting);
 
     // Initially disable finish button until all positions are voted for
@@ -81,7 +79,6 @@ document.addEventListener('DOMContentLoaded', function() {
             // All positions have been voted on
             showMessage('You have voted for all positions. Click "Finish Voting" to submit.', 'success');
             voteBtn.disabled = true;
-            nextPositionBtn.disabled = true;
             
             // Only enable finish button if all positions have been voted for
             finishBtn.disabled = votedPositions.length < positions.length;
@@ -112,7 +109,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Update button states
         voteBtn.disabled = true;
-        nextPositionBtn.disabled = true;
         
         // Disable finish button until all positions are voted for
         finishBtn.disabled = true;
@@ -151,7 +147,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    function submitVote() {
+    function submitVoteAndMoveNext() {
         if (!selectedCandidate) return;
         
         const position = positions[currentPositionIndex];
@@ -172,23 +168,30 @@ document.addEventListener('DOMContentLoaded', function() {
         // Add position to voted positions
         votedPositions.push(position.id);
         
-        // Enable next position button
+        // Disable vote button
         voteBtn.disabled = true;
-        nextPositionBtn.disabled = false;
         
         showMessage(`Vote for ${position.title} submitted successfully!`, 'success');
         
-        // Check if this is the last position
-        if (currentPositionIndex === positions.length - 1) {
-            nextPositionBtn.disabled = true;
-            // Enable finish button only if all positions have been voted for
-            finishBtn.disabled = votedPositions.length < positions.length;
-            showMessage('You have voted for all positions. Click "Finish Voting" to submit.', 'success');
-        }
-        
-        // Update progress indicators
-        const progressPercentage = ((votedPositions.length) / positions.length) * 100;
-        progressFill.style.width = `${progressPercentage}%`;
+        // Move to next position automatically
+        setTimeout(() => {
+            currentPositionIndex++;
+            loadCurrentPosition();
+            
+            // Reset selection
+            selectedCandidate = null;
+            
+            // Check if all positions have been voted for
+            if (currentPositionIndex >= positions.length) {
+                // Enable finish button only if all positions have been voted for
+                finishBtn.disabled = votedPositions.length < positions.length;
+                showMessage('You have voted for all positions. Click "Finish Voting" to submit.', 'success');
+            }
+            
+            // Update progress indicators
+            const progressPercentage = ((votedPositions.length) / positions.length) * 100;
+            progressFill.style.width = `${progressPercentage}%`;
+        }, 1000); // Short delay before moving to next position
     }
 
     function saveVote(vote) {
@@ -209,19 +212,6 @@ document.addEventListener('DOMContentLoaded', function() {
             currentStudent.hasVoted = true;
             sessionStorage.setItem('currentStudent', JSON.stringify(currentStudent));
         }
-    }
-
-    function moveToNextPosition() {
-        // Move to next position
-        currentPositionIndex++;
-        loadCurrentPosition();
-        
-        // Reset selection
-        selectedCandidate = null;
-        
-        // Disable buttons
-        voteBtn.disabled = true;
-        nextPositionBtn.disabled = true;
     }
 
     function finishVoting() {

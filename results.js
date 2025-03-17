@@ -1,269 +1,248 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Get DOM elements
-    const totalVotesElement = document.getElementById('totalVotes');
-    const participationRateElement = document.getElementById('participationRate');
-    const resultsContainer = document.getElementById('resultsContainer');
-    const positionTabsContainer = document.getElementById('positionTabs');
-    const lastUpdatedElement = document.getElementById('lastUpdated');
-    
-    // Load data
     loadResults();
-    updateLastUpdated();
     
-    // Set interval to refresh data every 30 seconds
-    setInterval(loadResults, 30000);
-    setInterval(updateLastUpdated, 30000);
+    // Update the last updated time
+    document.getElementById('lastUpdated').textContent = new Date().toLocaleString();
+});
+
+function loadResults() {
+    const positions = JSON.parse(localStorage.getItem('positions')) || [];
+    const votes = JSON.parse(localStorage.getItem('votes')) || [];
+    const students = JSON.parse(localStorage.getItem('students')) || [];
     
-    function loadResults() {
-        const votes = JSON.parse(localStorage.getItem('votes')) || [];
-        const positions = JSON.parse(localStorage.getItem('positions')) || [];
-        const students = JSON.parse(localStorage.getItem('students')) || [];
-        
-        // Update summary stats
-        const totalVotes = votes.length;
-        const totalStudents = students.length;
-        const studentsVoted = students.filter(student => student.hasVoted).length;
-        const participationRate = totalStudents > 0 ? ((studentsVoted / totalStudents) * 100).toFixed(1) : '0.0';
-        
-        totalVotesElement.textContent = totalVotes;
-        participationRateElement.textContent = `${participationRate}%`;
-        
-        // Clear tabs and results container
-        positionTabsContainer.innerHTML = '';
-        resultsContainer.innerHTML = '';
-        
-        if (positions.length === 0 || votes.length === 0) {
-            const noDataMessage = document.createElement('div');
-            noDataMessage.className = 'no-data-message';
-            noDataMessage.innerHTML = `
+    // Update summary stats
+    document.getElementById('totalVotes').textContent = votes.length;
+    document.getElementById('totalPositions').textContent = positions.length;
+    
+    const studentsVoted = students.filter(student => student.hasVoted).length;
+    const participationRate = students.length > 0 ? 
+        ((studentsVoted / students.length) * 100).toFixed(1) : '0.0';
+    document.getElementById('participationRate').textContent = `${participationRate}%`;
+    
+    // Clear position tabs and results
+    const positionTabs = document.getElementById('positionTabs');
+    const positionResults = document.getElementById('positionResults');
+    
+    positionTabs.innerHTML = '';
+    positionResults.innerHTML = '';
+    
+    if (positions.length === 0) {
+        positionResults.innerHTML = `
+            <div class="no-data-message">
                 <i class="fas fa-info-circle"></i>
-                <p>No voting data available yet. Check back later when votes have been cast.</p>
+                <p>No positions available.</p>
+            </div>
+        `;
+        return;
+    }
+    
+    // Create tabs for each position
+    positions.forEach((position, index) => {
+        const tabButton = document.createElement('button');
+        tabButton.className = `position-tab-btn ${index === 0 ? 'active' : ''}`;
+        tabButton.setAttribute('data-position-id', position.id);
+        tabButton.innerHTML = `<i class="fas fa-user-tie"></i> ${position.title}`;
+        
+        tabButton.addEventListener('click', function() {
+            // Remove active class from all tabs
+            document.querySelectorAll('.position-tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Add active class to clicked tab
+            this.classList.add('active');
+            
+            // Hide all position results
+            document.querySelectorAll('.position-result').forEach(result => {
+                result.classList.remove('active');
+            });
+            
+            // Show the selected position result
+            document.getElementById(`position-${position.id}`).classList.add('active');
+        });
+        
+        positionTabs.appendChild(tabButton);
+        
+        // Create result container for this position
+        const resultContainer = document.createElement('div');
+        resultContainer.className = `position-result ${index === 0 ? 'active' : ''}`;
+        resultContainer.id = `position-${position.id}`;
+        
+        // Get votes for this position
+        const positionVotes = votes.filter(vote => vote.positionId === position.id);
+        
+        if (positionVotes.length === 0) {
+            resultContainer.innerHTML = `
+                <h3><i class="fas fa-chart-bar"></i> ${position.title}</h3>
+                <div class="no-votes-message">
+                    <i class="fas fa-info-circle"></i>
+                    <p>No votes have been cast for this position yet.</p>
+                </div>
             `;
-            resultsContainer.appendChild(noDataMessage);
+            positionResults.appendChild(resultContainer);
             return;
         }
         
-        // Create tabs for each position
-        positions.forEach((position, index) => {
-            // Create tab button
-            const tabButton = document.createElement('button');
-            tabButton.className = 'position-tab-btn' + (index === 0 ? ' active' : '');
-            tabButton.setAttribute('data-position-id', position.id);
-            tabButton.innerHTML = `<i class="fas fa-user-tie"></i> ${position.title}`;
+        // Count votes per candidate
+        const candidateVotes = {};
+        const candidateNames = {};
+        
+        position.candidates.forEach(candidate => {
+            candidateVotes[candidate.id] = 0;
+            candidateNames[candidate.id] = candidate.name;
+        });
+        
+        positionVotes.forEach(vote => {
+            if (candidateVotes[vote.candidateId] !== undefined) {
+                candidateVotes[vote.candidateId]++;
+            }
+        });
+        
+        // Create HTML for the position result
+        resultContainer.innerHTML = `
+            <h3><i class="fas fa-chart-bar"></i> ${position.title}</h3>
+            <div class="results-table-container">
+                <table class="results-table">
+                    <thead>
+                        <tr>
+                            <th>Candidate</th>
+                            <th>Votes</th>
+                            <th>Percentage</th>
+                            <th>Progress</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-${position.id}"></tbody>
+                </table>
+            </div>
+            <div class="graph-container">
+                <canvas id="chart-${position.id}"></canvas>
+            </div>
+            <div class="vote-summary">
+                <p>Total votes for this position: <span class="total">${positionVotes.length}</span></p>
+            </div>
+        `;
+        
+        positionResults.appendChild(resultContainer);
+        
+        // Populate the table with candidate results
+        const tbody = document.getElementById(`tbody-${position.id}`);
+        
+        // Find the candidate with the most votes
+        let maxVotes = 0;
+        let winningCandidateId = null;
+        
+        for (const [candidateId, voteCount] of Object.entries(candidateVotes)) {
+            if (voteCount > maxVotes) {
+                maxVotes = voteCount;
+                winningCandidateId = candidateId;
+            }
+        }
+        
+        // Add rows for each candidate
+        for (const [candidateId, voteCount] of Object.entries(candidateVotes)) {
+            const percentage = positionVotes.length > 0 ? 
+                ((voteCount / positionVotes.length) * 100).toFixed(1) : '0.0';
             
-            tabButton.addEventListener('click', function() {
-                // Remove active class from all tabs
-                document.querySelectorAll('.position-tab-btn').forEach(btn => {
-                    btn.classList.remove('active');
-                });
-                
-                // Add active class to clicked tab
-                this.classList.add('active');
-                
-                // Show corresponding content
-                document.querySelectorAll('.position-result').forEach(content => {
-                    content.classList.remove('active');
-                });
-                
-                document.getElementById(`position-${position.id}`).classList.add('active');
-            });
-            
-            positionTabsContainer.appendChild(tabButton);
-            
-            // Create content for this position
-            const positionContent = document.createElement('div');
-            positionContent.className = 'position-result' + (index === 0 ? ' active' : '');
-            positionContent.id = `position-${position.id}`;
-            
-            // Get votes for this position
-            const positionVotes = votes.filter(vote => vote.positionId === position.id);
-            
-            // If no votes for this position
-            if (positionVotes.length === 0) {
-                const noVotesMessage = document.createElement('p');
-                noVotesMessage.className = 'no-votes-message';
-                noVotesMessage.innerHTML = `<i class="fas fa-info-circle"></i> No votes have been cast for ${position.title} yet.`;
-                positionContent.appendChild(noVotesMessage);
-                resultsContainer.appendChild(positionContent);
-                return;
+            const row = document.createElement('tr');
+            if (candidateId === winningCandidateId && voteCount > 0) {
+                row.className = 'winner';
             }
             
-            // Count votes per candidate
-            const candidateVotes = {};
-            const candidateNames = {};
-            
-            position.candidates.forEach(candidate => {
-                candidateVotes[candidate.id] = 0;
-                candidateNames[candidate.id] = candidate.name;
-            });
-            
-            positionVotes.forEach(vote => {
-                if (candidateVotes[vote.candidateId] !== undefined) {
-                    candidateVotes[vote.candidateId]++;
-                }
-            });
-            
-            // Create results table
-            const resultsTable = document.createElement('table');
-            resultsTable.className = 'results-table';
-            resultsTable.innerHTML = `
-                <thead>
-                    <tr>
-                        <th>Candidate</th>
-                        <th>Votes</th>
-                        <th>Percentage</th>
-                        <th>Bar</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
+            row.innerHTML = `
+                <td>${candidateNames[candidateId]}</td>
+                <td>${voteCount}</td>
+                <td>${percentage}%</td>
+                <td>
+                    <div class="vote-bar-container">
+                        <div class="vote-bar" style="width: ${percentage}%"></div>
+                    </div>
+                </td>
             `;
             
-            const tbody = resultsTable.querySelector('tbody');
-            
-            // Sort candidates by votes (descending)
-            const sortedCandidates = Object.entries(candidateVotes)
-                .sort((a, b) => b[1] - a[1]);
-            
-            // Add rows for each candidate
-            sortedCandidates.forEach(([candidateId, voteCount]) => {
-                const percentage = positionVotes.length > 0 ? 
-                    ((voteCount / positionVotes.length) * 100).toFixed(1) : '0.0';
-                
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${candidateNames[candidateId]}</td>
-                    <td>${voteCount}</td>
-                    <td>${percentage}%</td>
-                    <td>
-                        <div class="vote-bar-container">
-                            <div class="vote-bar" style="width: ${percentage}%"></div>
-                        </div>
-                    </td>
-                `;
-                
-                // Highlight winner
-                if (sortedCandidates[0][0] === candidateId) {
-                    row.classList.add('winner');
-                }
-                
-                tbody.appendChild(row);
-            });
-            
-            positionContent.appendChild(resultsTable);
-            
-            // Create canvas for chart
-            const canvasContainer = document.createElement('div');
-            canvasContainer.className = 'canvas-container';
-            
-            const canvas = document.createElement('canvas');
-            canvas.id = `chart-${position.id}`;
-            canvasContainer.appendChild(canvas);
-            positionContent.appendChild(canvasContainer);
-            
-            resultsContainer.appendChild(positionContent);
-            
-            // Create chart (after the element is added to the DOM)
-            setTimeout(() => {
-                createChart(canvas.id, position.title, candidateNames, candidateVotes);
-            }, 0);
-        });
+            tbody.appendChild(row);
+        }
+        
+        // Create chart for this position
+        createChart(position, candidateVotes, candidateNames);
+    });
+}
+
+function createChart(position, candidateVotes, candidateNames) {
+    const ctx = document.getElementById(`chart-${position.id}`).getContext('2d');
+    
+    // Prepare data for the chart
+    const labels = [];
+    const data = [];
+    const backgroundColors = [];
+    const borderColors = [];
+    
+    // Color palette for the chart
+    const colorPalette = [
+        ['rgba(52, 152, 219, 0.7)', 'rgba(52, 152, 219, 1)'],
+        ['rgba(46, 204, 113, 0.7)', 'rgba(46, 204, 113, 1)'],
+        ['rgba(155, 89, 182, 0.7)', 'rgba(155, 89, 182, 1)'],
+        ['rgba(241, 196, 15, 0.7)', 'rgba(241, 196, 15, 1)'],
+        ['rgba(231, 76, 60, 0.7)', 'rgba(231, 76, 60, 1)'],
+        ['rgba(52, 73, 94, 0.7)', 'rgba(52, 73, 94, 1)'],
+        ['rgba(26, 188, 156, 0.7)', 'rgba(26, 188, 156, 1)'],
+        ['rgba(230, 126, 34, 0.7)', 'rgba(230, 126, 34, 1)'],
+        ['rgba(149, 165, 166, 0.7)', 'rgba(149, 165, 166, 1)'],
+        ['rgba(41, 128, 185, 0.7)', 'rgba(41, 128, 185, 1)']
+    ];
+    
+    let colorIndex = 0;
+    
+    for (const [candidateId, voteCount] of Object.entries(candidateVotes)) {
+        labels.push(candidateNames[candidateId]);
+        data.push(voteCount);
+        
+        // Assign colors from the palette, cycling if needed
+        const [bgColor, borderColor] = colorPalette[colorIndex % colorPalette.length];
+        backgroundColors.push(bgColor);
+        borderColors.push(borderColor);
+        
+        colorIndex++;
     }
     
-    function createChart(canvasId, positionTitle, candidateNames, candidateVotes) {
-        const ctx = document.getElementById(canvasId).getContext('2d');
-        
-        // Extract data for chart
-        const labels = [];
-        const data = [];
-        const backgroundColors = [];
-        const hoverBackgroundColors = [];
-        
-        // Color palette for chart
-        const colorPalette = [
-            ['rgba(52, 152, 219, 0.7)', 'rgba(52, 152, 219, 0.9)'],
-            ['rgba(46, 204, 113, 0.7)', 'rgba(46, 204, 113, 0.9)'],
-            ['rgba(155, 89, 182, 0.7)', 'rgba(155, 89, 182, 0.9)'],
-            ['rgba(241, 196, 15, 0.7)', 'rgba(241, 196, 15, 0.9)'],
-            ['rgba(231, 76, 60, 0.7)', 'rgba(231, 76, 60, 0.9)'],
-            ['rgba(52, 73, 94, 0.7)', 'rgba(52, 73, 94, 0.9)']
-        ];
-        
-        let colorIndex = 0;
-        
-        // Sort candidates by votes (descending)
-        const sortedCandidates = Object.entries(candidateVotes)
-            .sort((a, b) => b[1] - a[1]);
-        
-        sortedCandidates.forEach(([candidateId, voteCount]) => {
-            labels.push(candidateNames[candidateId]);
-            data.push(voteCount);
-            
-            // Cycle through colors
-            const colorSet = colorPalette[colorIndex % colorPalette.length];
-            backgroundColors.push(colorSet[0]);
-            hoverBackgroundColors.push(colorSet[1]);
-            
-            colorIndex++;
-        });
-        
-        // Create chart
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Votes',
-                    data: data,
-                    backgroundColor: backgroundColors,
-                    hoverBackgroundColor: hoverBackgroundColors,
-                    borderWidth: 0,
-                    borderRadius: 5
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false
-                    },
-                    title: {
-                        display: true,
-                        text: positionTitle,
-                        font: {
-                            size: 16,
-                            weight: 'bold'
-                        },
-                        padding: {
-                            top: 10,
-                            bottom: 20
-                        }
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                const percentage = total > 0 ? 
-                                    ((context.raw / total) * 100).toFixed(1) : '0.0';
-                                return `${context.raw} votes (${percentage}%)`;
-                            }
+    // Create the chart
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Votes',
+                data: data,
+                backgroundColor: backgroundColors,
+                borderColor: borderColors,
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const value = context.raw;
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                            return `Votes: ${value} (${percentage}%)`;
                         }
                     }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            precision: 0
-                        }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0
                     }
                 }
             }
-        });
-    }
-    
-    function updateLastUpdated() {
-        const now = new Date();
-        lastUpdatedElement.textContent = now.toLocaleString();
-    }
-});
+        }
+    });
+}
