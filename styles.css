@@ -1,0 +1,351 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+}
+
+body {
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+.container {
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #2c3e50;
+}
+
+h2 {
+    margin-bottom: 15px;
+    color: #3498db;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+input, select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-right: 10px;
+    margin-top: 10px;
+}
+
+.btn:hover {
+    background-color: #2980b9;
+}
+
+.btn:disabled {
+    background-color: #95a5a6;
+    cursor: not-allowed;
+}
+
+.error-message {
+    color: #e74c3c;
+    margin-bottom: 10px;
+}
+
+.message {
+    margin-top: 20px;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+.success {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.error {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.candidate-card {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.candidate-card:hover {
+    background-color: #f9f9f9;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.candidate-card.selected {
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.candidates-section {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.chart-container {
+    margin-top: 30px;
+    height: 400px;
+}
+
+/* Add this to the existing styles.css file */
+
+.admin-link {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.subtle-link {
+    color: #bdc3c7;
+    text-decoration: none;
+    font-size: 12px;
+}
+
+.subtle-link:hover {
+    color: #7f8c8d;
+}
+
+.back-link {
+    margin-top: 20px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.back-link a {
+    color: #3498db;
+    text-decoration: none;
+}
+
+.back-link a:hover {
+    text-decoration: underline;
+}
+
+.voting-controls {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.student-info {
+    position: relative;
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.btn-logout {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #e74c3c;
+    padding: 5px 10px;
+    font-size: 14px;
+}
+
+.btn-logout:hover {
+    background-color: #c0392b;
+}
+
+/* Admin section styles */
+.admin-section h2 {
+    margin-top: 20px;
+}
+
+.admin-actions {
+    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.btn-danger {
+    background-color: #e74c3c;
+}
+
+.btn-danger:hover {
+    background-color: #c0392b;
+}
+
+.admin-controls p {
+    color: #7f8c8d;
+    font-style: italic;
+    margin-bottom: 15px;
+}
+
+.admin-stats {
+    margin-top: 30px;
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 4px;
+}
+
+.admin-stats h3 {
+    margin-bottom: 10px;
+    color: #2c3e50;
+}
+
+.admin-stats table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.admin-stats th, .admin-stats td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.admin-stats th {
+    background-color: #f2f2f2;
+}
+
+.voting-stats {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.voting-stats p {
+    margin: 0;
+    font-weight: bold;
+}
+
+.voting-stats span {
+    font-weight: normal;
+    color: #3498db;
+}
+
+.last-updated {
+    margin-top: 15px;
+    text-align: center;
+    font-size: 14px;
+    color: #7f8c8d;
+}
+
+/* Results link button styling */
+.results-link {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.results-link a {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #2ecc71;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.results-link a:hover {
+    background-color: #27ae60;
+    text-decoration: none;
+}
+
+@media (max-width: 600px) {
+    .voting-stats {
+        flex-direction: column;
+    }
+    
+    .voting-stats p {
+        margin-bottom: 5px;
+    }
+}
+
+/* Admin button styling */
+.admin-button {
+    display: inline-block;
+    padding: 8px 16px;
+    background-color: #34495e;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.admin-button:hover {
+    background-color: #2c3e50;
+    text-decoration: none;
+}
+
+.admin-link {
+    margin-top: 15px;
+    text-align: center;
+}
+
+/* Add these styles to your existing styles.css file */
+
+.thank-you-section {
+    text-align: center;
+    padding: 20px;
+}
+
+.thank-you-message {
+    margin: 30px 0;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+.thank-you-message p {
+    margin-bottom: 15px;
+}
+
+.sign-out-section {
+    margin-top: 30px;
+}
+
+.sign-out-section .btn {
+    background-color: #e74c3c;
+    font-size: 16px;
+    padding: 12px 30px;
+}
+
+.sign-out-section .btn:hover {
+    background-color: #c0392b;
+}

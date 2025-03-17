@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Voting System - Login</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="favicon" href="images/pngegg (8).png"
+</head>
+<body>
+    <div class="container">
+        <div class="login-form">
+            <h1>Student Voting System</h1>
+            <div class="form-group">
+                <label for="studentId">Student ID:</label>
+                <input type="text" id="studentId" placeholder="Enter your student ID">
+            </div>
+            <div id="error-message" class="error-message"></div>
+            <button id="loginBtn" class="btn">Login</button>
+            <div class="results-link">
+                <a href="#" id="viewResultsBtn">View Current Results</a>
+            </div>
+            <div class="admin-link">
+                <a href="#" id="adminBtn" class="admin-button">Admin Panel</a>
+            </div>
+        </div>
+    </div>
+    <script src="init.js"></script>
+    <script src="login.js"></script>
+    <script>
+        // Password protection for admin and results
+        document.getElementById('viewResultsBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            const password = prompt('Please enter admin password to view results:');
+            if (password === 'admin123') {
+                sessionStorage.setItem('adminAuthenticated', 'true');
+                window.location.href = 'admin.html';
+            } else {
+                alert('Invalid password. Access denied.');
+            }
+        });
+        
+        document.getElementById('adminBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            const password = prompt('Please enter admin password:');
+            if (password === 'admin123') {
+                sessionStorage.setItem('adminAuthenticated', 'true');
+                window.location.href = 'admin.html';
+            } else {
+                alert('Invalid password. Access denied.');
+            }
+        });
+    </script>
+</body>
+</html>

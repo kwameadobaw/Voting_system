@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Voting System - Admin</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="admin-section">
+            <h1>Admin Panel</h1>
+            
+            <div class="admin-stats">
+                <h3>Voting Statistics</h3>
+                <table>
+                    <tr>
+                        <th>Total Students</th>
+                        <td id="totalStudents">0</td>
+                    </tr>
+                    <tr>
+                        <th>Students Voted</th>
+                        <td id="studentsVoted">0</td>
+                    </tr>
+                    <tr>
+                        <th>Participation Rate</th>
+                        <td id="participationRate">0%</td>
+                    </tr>
+                    <tr>
+                        <th>Total Votes Cast</th>
+                        <td id="totalVotes">0</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <div class="admin-stats">
+                <h3>Position Statistics</h3>
+                <table id="positionStats">
+                    <tr>
+                        <th>Position</th>
+                        <th>Votes Cast</th>
+                        <th>Leading Candidate</th>
+                    </tr>
+                    <!-- Position stats will be populated here -->
+                </table>
+            </div>
+            
+            <div class="admin-controls">
+                <h2>System Controls</h2>
+                <p>Use these controls with caution. These actions cannot be undone.</p>
+                
+                <div class="admin-actions">
+                    <button id="resetVotesBtn" class="btn btn-danger">Reset All Votes</button>
+                    <button id="resetStudentsBtn" class="btn btn-danger">Reset Student Voting Status</button>
+                    <button id="downloadDataBtn" class="btn">Download Voting Data</button>
+                </div>
+                
+                <div id="adminMessage" class="message"></div>
+            </div>
+            
+            <div class="back-link">
+                <a href="index.html">Back to Login</a>
+                <a href="results.html">View Results</a>
+            </div>
+        </div>
+    </div>
+    <script src="init.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>

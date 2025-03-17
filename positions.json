@@ -1,0 +1,88 @@
+{
+  "positions": [
+    {
+      "id": "president",
+      "title": "Student President",
+      "candidates": [
+        {
+          "id": "pres1",
+          "name": "Alex Johnson",
+          "description": "Third-year Computer Science student"
+        },
+        {
+          "id": "pres2",
+          "name": "Sarah Williams",
+          "description": "Fourth-year Business Administration student"
+        },
+        {
+          "id": "pres3",
+          "name": "Mark Thompson",
+          "description": "Second-year Engineering student"
+        }
+      ]
+    },
+    {
+      "id": "vp",
+      "title": "Vice President",
+      "candidates": [
+        {
+          "id": "vp1",
+          "name": "Lisa Chen",
+          "description": "Third-year Psychology student"
+        },
+        {
+          "id": "vp2",
+          "name": "Robert Davis",
+          "description": "Fourth-year Economics student"
+        },
+        {
+          "id": "vp3",
+          "name": "Jennifer Lee",
+          "description": "Second-year Biology student"
+        }
+      ]
+    },
+    {
+      "id": "secretary",
+      "title": "Secretary",
+      "candidates": [
+        {
+          "id": "sec1",
+          "name": "Daniel Brown",
+          "description": "Third-year History student"
+        },
+        {
+          "id": "sec2",
+          "name": "Michelle Garcia",
+          "description": "Second-year Communications student"
+        },
+        {
+          "id": "sec3",
+          "name": "Kevin Wilson",
+          "description": "Fourth-year Political Science student"
+        }
+      ]
+    },
+    {
+      "id": "treasurer",
+      "title": "Treasurer",
+      "candidates": [
+        {
+          "id": "tre1",
+          "name": "Rachel Kim",
+          "description": "Fourth-year Accounting student"
+        },
+        {
+          "id": "tre2",
+          "name": "Thomas Martinez",
+          "description": "Third-year Finance student"
+        },
+        {
+          "id": "tre3",
+          "name": "Olivia Taylor",
+          "description": "Second-year Mathematics student"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Voting System - Vote</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="voting-section">
+            <h1>Cast Your Vote</h1>
+            
+            <div class="student-info">
+                <p>Student ID: <span id="displayStudentId"></span></p>
+                <p>Name: <span id="displayStudentName"></span></p>
+                <button id="logoutBtn" class="btn btn-logout">Logout</button>
+            </div>
+            <div class="position-selection">
+                <h2>Select a Position</h2>
+                <select id="positionSelect">
+                    <option value="">-- Select Position --</option>
+                </select>
+            </div>
+            <div class="candidates-section" id="candidatesSection">
+                <h2>Candidates</h2>
+                <div id="candidatesList"></div>
+            </div>
+            <div class="voting-controls">
+                <button id="voteBtn" class="btn" disabled>Submit Vote</button>
+                <button id="nextPositionBtn" class="btn" disabled>Vote for Another Position</button>
+                <button id="finishBtn" class="btn">Finish Voting</button>
+            </div>
+            <div id="message" class="message"></div>
+        </div>
+    </div>
+    <script src="voting.js"></script>
+    <script>
+        // Add logout functionality
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            if (confirm('Are you sure you want to logout? Any unsubmitted votes will be lost.')) {
+                sessionStorage.removeItem('currentStudent');
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
+</body>
+</html>

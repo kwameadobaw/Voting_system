@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Voting System - Results</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="results-section">
+            <h1>Voting Results</h1>
+            
+            <div class="voting-stats">
+                <p>Total Students: <span id="totalStudents">0</span></p>
+                <p>Students Voted: <span id="studentsVoted">0</span></p>
+                <p>Participation Rate: <span id="participationRate">0%</span></p>
+            </div>
+            
+            <div class="position-selection">
+                <h2>Select a Position to View Results</h2>
+                <select id="positionResultSelect">
+                    <option value="">-- Select Position --</option>
+                </select>
+            </div>
+            
+            <div class="chart-container">
+                <canvas id="resultsChart"></canvas>
+            </div>
+            
+            <div class="last-updated">
+                <p>Last updated: <span id="lastUpdated"></span></p>
+                <p>Results automatically update every minute</p>
+            </div>
+            
+            <div class="back-link">
+                <a href="index.html">Back to Login</a>
+            </div>
+        </div>
+    </div>
+    <script src="init.js"></script>
+    <script src="results.js"></script>
+</body>
+</html>

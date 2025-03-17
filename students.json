@@ -1,0 +1,29 @@
+{
+  "students": [
+    {
+      "id": "STU001",
+      "name": "John Doe",
+      "hasVoted": false
+    },
+    {
+      "id": "STU002",
+      "name": "Jane Smith",
+      "hasVoted": false
+    },
+    {
+      "id": "STU003",
+      "name": "Michael Johnson",
+      "hasVoted": false
+    },
+    {
+      "id": "STU004",
+      "name": "Emily Brown",
+      "hasVoted": false
+    },
+    {
+      "id": "STU005",
+      "name": "David Wilson",
+      "hasVoted": false
+    }
+  ]
+}
